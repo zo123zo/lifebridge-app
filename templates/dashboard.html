@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LifeBridge - Clinical Management Architecture</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap');
+
+        :root { 
+            /* Light, Calm Luxury Gold Theme Styles */
+            --bg-gold: linear-gradient(135deg, #fdfbf7 0%, #f7f3e9 50%, #eee6d3 100%);
+            --surface-card: #ffffff;
+            --gold-primary: #c5a880;
+            --gold-dark: #8c6d3f;
+            --gold-soft-bg: #fbf9f3;
+            --charcoal-text: #2c2924;
+            --slate-muted: #706b61;
+            --border-fine: #e8e2d5;
+        }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            background: var(--bg-gold-light); 
+            color: var(--charcoal-text); 
+            display: flex; 
+            flex-direction: column;
+            height: 100vh; 
+            overflow: hidden; 
+        }
+        
+        .app-container { display: flex; flex: 1; height: calc(100vh - 50px); overflow: hidden; }
+
+        /* Left Hand Premium Multi-Feature Workspace Sidebar Controller */
+        .sidebar { 
+            width: 260px; 
+            background: #ffffff; 
+            display: flex; 
+            flex-direction: column; 
+            padding: 30px 20px;
+            box-sizing: border-box;
+            border-right: 1px solid var(--border-fine); 
+            gap: 20px;
+            z-index: 10; 
+        }
+        
+        .sidebar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--gold-dark);
+            margin-bottom: 25px;
+            padding-left: 10px;
+            border-left: 3px solid var(--gold-primary);
+        }
+
+        .menu-heading {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--slate-muted);
+            margin: 15px 0 5px 10px;
+        }
+
+        .nav-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            color: var(--charcoal-text); 
+            cursor: pointer; 
+            padding: 12px 15px; 
+            border-radius: 10px; 
+            font-weight: 500; 
+            font-size: 14px;
+            transition: all 0.2s ease; 
+        }
+        .nav-item:hover, .nav-item.active { 
+            background: var(--gold-soft-bg); 
+            color: var(--gold-dark); 
+            font-weight: 600;
+        }
+        .nav-item .icon { font-size: 16px; color: var(--gold-primary); }
+
+        /* Main Screen Container space area */
+        .workspace { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background: transparent; }
+        
+        .header { 
+            padding: 25px 50px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-fine); 
+        }
+        .header h1 { 
+            margin: 0; 
+            font-size: 28px; 
+            font-weight: 700; 
+            font-family: 'Playfair Display', serif;
+            color: var(--charcoal-text);
+        }
+        
+        .page { padding: 40px 50px; display: none; }
+        .page.active { display: block; }
+
+        /* Image Slideshow Frame (3 Seconds Loops) */
+        .slider-frame { width: 100%; height: 280px; border-radius: 20px; overflow: hidden; position: relative; margin-bottom: 35px; border: 1px solid var(--border-fine); box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .slider-wrapper { display: flex; width: 400%; height: 100%; transition: transform 0.6s ease-in-out; }
+        .slide { width: 25%; height: 100%; background-size: cover; background-position: center; position: relative; display: flex; flex-direction: column; justify-content: center; padding: 0 50px; box-sizing: border-box; }
+        .slide::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to right, rgba(255,255,255,0.92) 50%, rgba(255,255,255,0.1) 100%); }
+        
+        .slide-content { position: relative; z-index: 2; max-width: 550px; }
+        .slide-content h2 { margin: 0 0 10px 0; font-size: 26px; color: var(--gold-dark); font-family: 'Playfair Display', serif; }
+        .slide-content p { margin: 0; font-size: 15px; color: var(--slate-muted); line-height: 1.6; font-style: italic; }
+
+        /* Application Architecture Layout Presentation Blocks */
+        .grid-two { display: grid; grid-template-columns: 1fr 1fr; gap: 35px; margin-bottom: 35px; }
+        .card { background: var(--surface-card); padding: 30px; border-radius: 20px; border: 1px solid var(--border-fine); box-shadow: 0 4px 15px rgba(140,109,63,0.04); }
+        .card h2 { 
+            margin-top: 0; margin-bottom: 25px; font-size: 18px; font-weight: 700; 
+            font-family: 'Playfair Display', serif; color: var(--gold-dark);
+            border-left: 3px solid var(--gold-primary); padding-left: 12px; 
+        }
+
+        /* Beautiful Informative Video Card Layout Component Block */
+        .video-card { background: var(--surface-card); border-radius: 20px; padding: 35px; margin-bottom: 35px; border: 1px solid var(--border-fine); display: grid; grid-template-columns: 1fr 1.1fr; gap: 40px; align-items: center; }
+        .video-frame { width: 100%; height: 230px; border-radius: 14px; overflow: hidden; border: 1px solid var(--border-fine); }
+        .video-frame iframe { width: 100%; height: 100%; border: none; }
+
+        /* Photo Banner Layout Filler to replace plain spaces */
+        .photo-banner-filler {
+            background: linear-gradient(rgba(247, 243, 233, 0.85), rgba(247, 243, 233, 0.85)), url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80');
+            background-size: cover; background-position: center;
+            padding: 30px; border-radius: 20px; border: 1px dashed var(--gold-primary); text-align: center; margin-bottom: 35px;
+        }
+        .photo-banner-filler p { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--gold-dark); font-style: italic; margin: 0; }
+
+        /* Operational Data Presentation Tables */
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 14px; border-bottom: 1px solid var(--border-fine); font-size: 14px; }
+        th { background: var(--gold-soft-bg); color: var(--gold-dark); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        /* Interactive Input Configuration Elements Layout */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        input, select { 
+            width: 100%; padding: 12px 16px; background: var(--gold-soft-bg); 
+            border: 1px solid var(--border-fine); border-radius: 8px; color: var(--charcoal-text); 
+            box-sizing: border-box; font-size: 14px; font-family: inherit; transition: all 0.2s; 
+        }
+        input:focus, select:focus { border-color: var(--gold-primary); outline: none; background: #ffffff; }
+        
+        /* Direct Action App Interface Control Buttons */
+        .btn-app { padding: 12px 24px; color: white; border: none; border-radius: 8px; font-weight: 600; font-family: inherit; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+        .btn-gold { background: var(--gold-dark); }
+        .btn-gold:hover { background: #73562f; }
+        .btn-submit { background: var(--gold-primary); width: 100%; }
+        .btn-submit:hover { background: var(--gold-dark); }
+
+        .badge { padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 12px; display: inline-block; }
+        .badge-active { background: #eef7ee; color: #2e7d32; border: 1px solid #c8e6c9; }
+        .badge-history { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
+
+        /* Dynamic Image Selector Upload Preview Square Frame Box */
+        .photo-uploader-frame {
+            width: 110px; height: 110px; border: 2px dashed var(--gold-primary); border-radius: 12px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: var(--gold-soft-bg); cursor: pointer; position: relative; overflow: hidden;
+        }
+        .photo-uploader-frame img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none; }
+        .photo-uploader-frame span { font-size: 11px; text-align: center; color: var(--slate-muted); font-weight: 500; padding: 5px; }
+
+        /* Immersive Premium Popup Modal Overlay Module */
+        .modal-blur-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(44, 41, 36, 0.4); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 100; visibility: hidden; opacity: 0; transition: all 0.25s ease; }
+        .modal-blur-overlay.open { visibility: visible; opacity: 1; }
+        .modal-window { background: #ffffff; width: 480px; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border-fine); }
+        .modal-window h3 { margin-top: 0; font-size: 24px; color: var(--gold-dark); font-family: 'Playfair Display', serif; }
+        .modal-window p { color: var(--slate-muted); line-height: 1.6; margin-bottom: 25px; font-size: 15px; }
+
+        /* Enterprise Footer Grid Component */
+        .app-footer { height: 50px; background: #ffffff; border-top: 1px solid var(--border-fine); display: flex; justify-content: space-between; align-items: center; padding: 0 40px; box-sizing: border-box; font-size: 12px; color: var(--slate-muted); }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Left Hand Side Premium Hub Feature Navigation Bar -->
+        <div class="sidebar">
+            <div class="sidebar-brand">LifeBridge Suite</div>
+            
+            <div class="menu-heading">Operational Hubs</div>
+            <div class="nav-item active" onclick="switchPage('client-view', this)">
+                <span class="icon">📁</span> <span class="text">Welcome Registry Hub</span>
+            </div>
+            <div class="nav-item" onclick="switchPage('admin-view', this)">
+                <span class="icon">📉</span> <span class="text">Cross-Match Console</span>
+            </div>
+            <div class="nav-item" onclick="switchPage('register-view', this)">
+                <span class="icon">📝</span> <span class="text">System Intake Records</span>
+            </div>
+
+            <div class="menu-heading">Support & Security Modules</div>
+            <div class="nav-item" onclick="triggerSidebarAction('Help Desk Hub Module')">
+                <span class="icon">ℹ</span> <span class="text">Help Center Desk</span>
+            </div>
+            <div class="nav-item" onclick="triggerSidebarAction('Virtual Assistant AI Core')">
+                <span class="icon">🤖</span> <span class="text">Virtual Assistant Core</span>
+            </div>
+            <div class="nav-item" onclick="triggerSidebarAction('User Administrative Account Workspace')">
+                <span class="icon">👤</span> <span class="text">My Account Manager</span>
+            </div>
+        </div>
+
+        <!-- Main Display Workspace Panel Structure Frame Container -->
+        <div class="workspace">
+            <div class="header">
+                <h1 id="view-title">LifeBridge Welcome Registry Hub</h1>
+                <span class="badge badge-active">● SECURE INFRASTRUCTURE CHANNEL</span>
+            </div>
+
+            <!-- 1. PUBLIC INTRO GATEWAY PORTAL SCREEN -->
+            <div id="client-view" class="page active">
+                
+                <!-- Accelerated 3-Second Image Carousel Slider Layout -->
+                <div class="slider-frame">
+                    <div class="slider-wrapper" id="sliderEngine">
+                        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80');">
+                            <div class="slide-content">
+                                <h2>The Gift of Tomorrow</h2>
+                                <p>“To know even one life has breathed easier because you have lived. This is to have succeeded.” — Ralph Waldo Emerson</p>
+                            </div>
+                        </div>
+                        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80');">
+                            <div class="slide-content">
+                                <h2>A Legacy of Pure Hope</h2>
+                                <p>“Donating an organ is not just giving a part of your body; it's giving someone else a whole future full of moments, family, and aspirations.”</p>
+                            </div>
+                        </div>
+                        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1516841273335-e39b37888115?auto=format&fit=crop&w=1200&q=80');">
+                            <div class="slide-content">
+                                <h2>Be The Light</h2>
+                                <p>“Your presence today supports critical clinical crossmatching infrastructure designed to secure logistics and build new beginnings seamlessly.”</p>
+                            </div>
+                        </div>
+                        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=1200&q=80');">
+                            <div class="slide-content">
+                                <h2>Boundless Vitality</h2>
+                                <p>“Kindness is an echo that transcends boundaries. Every record cataloged on this system represents an opportunity to reshape patient trajectories.”</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Beautiful Video Showcase Layout Card Grid -->
+                <div class="video-card">
+                    <div>
+                        <h3 style="margin:0 0 12px 0; color: var(--gold-dark); font-size:22px; font-family: 'Playfair Display', serif; font-weight: 700;">Real-Time Logistics Infrastructure</h3>
+                        <p style="color: var(--slate-muted); line-height: 1.6; margin:0; font-size:14px;">Explore the detailed technical workflows explaining how medical nodes leverage automated allocation databases to align tissue matrices, coordinate transport boundaries, and make high-stakes crossmatching safe.</p>
+                    </div>
+                    <div class="video-frame">
+                        <iframe src="https://www.youtube.com/embed/P_mK_VPrwS0" title="Organ Donation Insights" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <!-- Custom Photo Banner Layout Box Frame to remove plain unstyled spaces -->
+                <div class="photo-banner-filler">
+                    <p>“Excellence is an art won by training and habituation. We do not act rightly because we have virtue or excellence, but we rather have those because we have acted rightly.” — Aristotle</p>
+                </div>
+
+                <!-- App Core Interactive Action Popup Launcher Block Component Layout -->
+                <div class="card" style="text-align: center; padding: 40px;">
+                    <h3 style="margin-top:0; font-size:22px; font-family: 'Playfair Display', serif; color: var(--gold-dark);">Launch Diagnostic Environment Workspace</h3>
+                    <p style="color: var(--slate-muted); max-width: 550px; margin: 0 auto 25px auto; font-size:14px;">Review matching indices, biological cross-matching score criteria tables, and location parameters within safe testing sandboxes.</p>
+                    <button class="btn-app btn-gold" onclick="openSimulationCasePopup()">Trigger Sandbox System Popup</button>
+                </div>
+            </div>
+
+            <!-- 2. ADMINISTRATIVE CROSS ALLOCATION VIEW SUITE SCREEN -->
+            <div id="admin-view" class="page">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 35px;">
+                    <h3 style="margin:0; font-size:20px; font-family: 'Playfair Display', serif; color: var(--gold-dark);">Crossmatch Matrix Computations</h3>
+                    <button class="btn-app btn-gold" onclick="runLiveAllocationMatching()">Compute Priority Match Metrics</button>
+                </div>
+
+                <div id="matchCard" class="card" style="display:none; margin-bottom: 35px; border-top: 3px solid var(--gold-primary);">
+                    <h2>Highest Scoring Compatibility Allocations</h2>
+                    <table>
+                        <thead>
+                            <tr><th>Target Organ</th><th>Source Donor</th><th>Recipient Target</th><th>Blood Status</th><th>Shared Loci Matrix</th><th>Priority Scoring</th></tr>
+                        </thead>
+                        <tbody id="matchTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="grid-two">
+                    <div class="card">
+                        <h2>Active System Donor Node Logs</h2>
+                        <table>
+                            <thead><tr><th>ID/Photo</th><th>Donor Node & Contact</th><th>Blood Type</th><th>HLA Profile Matrix</th><th>Organ Available</th><th>Historical Record</th></tr></thead>
+                            <tbody id="donorTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="card">
+                        <h2>Recipient Critical Waitlist Records</h2>
+                        <table>
+                            <thead><tr><th>ID</th><th>Recipient Node / Location</th><th>Blood Type</th><th>HLA Profile Matrix</th><th>Urgency Priority</th></tr></thead>
+                            <tbody id="recipientTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. INPUT SYSTEM MANAGEMENT WORKSPACE REGISTER INTAKE PANEL -->
+            <div id="register-view" class="page">
+                <div class="grid-two">
+                    <!-- Complete Functional Donor Registry Card Frame with uploads -->
+                    <div class="card">
+                        <h2>Log Certified Harvest Donor Node</h2>
+                        <div style="display: flex; gap: 25px; margin-bottom: 25px; align-items: center;">
+                            <div class="photo-uploader-frame" onclick="document.getElementById('donor_photo_input').click()">
+                                <span id="upload_label">➕ Click to Upload Donor Photo</span>
+                                <img id="donor_photo_preview" alt="Donor Photo preview">
+                            </div>
+                            <input type="file" id="donor_photo_input" style="display: none;" onchange="previewUploadedFile(this, 'donor_photo_preview', 'upload_label')">
+                            
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
+                                <input type="text" id="d_name" placeholder="Donor Complete Name">
+                                <input type="text" id="d_phone" placeholder="Active Contact Phone Number">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <input type="text" id="d_hospital" placeholder="Hospital Origin Facility">
+                            <input type="text" id="d_hla" placeholder="HLA Marker Profile (e.g. A1-B7-DR1)">
+                        </div>
+                        <div class="form-row">
+                            <select id="d_blood">
+                                <option value="O+">Blood Category: O+</option><option value="O-">Blood Category: O-</option>
+                                <option value="A+">Blood Category: A+</option><option value="A-">Blood Category: A-</option>
+                                <option value="B+">Blood Category: B+</option><option value="B-">Blood Category: B-</option>
+                                <option value="AB+">Blood Category: AB+</option><option value="AB-">Blood Category: AB-</option>
+                            </select>
+                            <input type="text" id="d_organ" placeholder="Organ Category Classification (e.g. Kidney)">
+                        </div>
+                        <div style="margin-bottom: 25px;">
+                            <select id="d_history">
+                                <option value="None - Active Availability">No Prior History - Organ is Actively Available</option>
+                                <option value="ALREADY Donated Liver">Historical Entry: Patient has ALREADY Donated Liver</option>
+                                <option value="ALREADY Donated Kidney">Historical Entry: Patient has ALREADY Donated Kidney</option>
+                            </select>
+                        </div>
+                        <button class="btn-app btn-submit" onclick="executeDatabaseWrite('donor')">Save Donor Entry Record</button>
+                    </div>
+
+                    <!-- Recipient Registry Form Input Fields -->
+                    <div class="card">
+                        <h2>Log Critical Recipient Target Node</h2>
+                        <div class="form-row">
+                            <input type="text" id="r_name" placeholder="Recipient Complete Name">
+                            <input type="text" id="r_hospital" placeholder="Transplant Facility Location">
+                        </div>
+                        <div class="form-row">
+                            <select id="r_blood">
+                                <option value="O+">Blood Category: O+</option><option value="O-">Blood Category: O-</option>
+                                <option value="A+">Blood Category: A+</option><option value="A-">Blood Category: A-</option>
+                                <option value="B+">Blood Category: B+</option><option value="B-">Blood Category: B-</option>
+                                <option value="AB+">Blood Category: AB+</option><option value="AB-">Blood Category: AB-</option>
+                            </select>
+                            <input type="text" id="r_hla" placeholder="HLA Marker Profile (e.g. A2-B44-DR4)">
+                        </div>
+                        <div class="form-row">
+                            <input type="text" id="r_organ" placeholder="Organ Needed for Surgery">
+                            <input type="number" id="r_urgency" placeholder="Urgency Rating Matrix (1-10)" min="1" max="10">
+                        </div>
+                        <button class="btn-app btn-submit" onclick="executeDatabaseWrite('recipient')">Save Waitlist Entry Record</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Platform Operational Footer Element Node -->
+    <div class="app-footer">
+        <div>© 2026 LifeBridge Coordination Systems Group Network. All rights reserved.</div>
+        <div>Support Channel Portal: <b>helpdesk@lifebridge.org</b> &nbsp;|&nbsp; Administration Node Routing: <b>+1 (800) 555-9128</b></div>
+    </div>
+
+    <!-- Unique Dynamic Simulation Diagnostic Modal Screen Popup Frame Layout -->
+    <div class="modal-blur-overlay" id="appDiagnosticPopup" onclick="closeSimulationCasePopup()">
+        <div class="modal-window" onclick="event.stopPropagation()">
+            <div style="font-size: 32px; margin-bottom: 15px; color: var(--gold-primary);">📋</div>
+            <h3 id="popupHeaderTitle">Initializing Clinical Diagnostics Permutation</h3>
+            <p id="popupContentBody">Analyzing incoming hospital data logs to run real-time HLA crossmatching metrics across medical center parameters.</p>
+            <div style="background: var(--gold-soft-bg); border: 1px solid var(--border-fine); padding: 15px; border-radius: 10px; font-size:13px; color: var(--gold-dark); margin-bottom:25px; line-height:1.5; font-weight: 500;">
+                ✓ Operations Pipeline Clear • Matrix Algorithms Operational
+            </div>
+            <button class="btn-app btn-gold" style="width:100%;" onclick="closeSimulationCasePopup()">Return to Gateway Desk</button>
+        </div>
+    </div>
+
+    <!-- Core Dynamic Operational Scripts Core Interface -->
+    <script>
+        // Snappy, Precise 3-Second Automatic Photo Slider Rotation Engine
+        let internalSlideCursor = 0;
+        setInterval(() => {
+            internalSlideCursor = (internalSlideCursor + 1) % 4;
+            const targetTrack = document.getElementById('sliderEngine');
+            if(targetTrack) {
+                targetTrack.style.transform = `translateX(-${internalSlideCursor * 25}%)`;
+            }
+        }, 3000); // Trigger transition strictly at every 3000ms loop threshold
+
+        // Dynamic File Avatar Preview Component logic function code 
+        function previewUploadedFile(inputField, imageTagId, labelId) {
+            const file = inputField.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(imageTagId).src = e.target.result;
+                    document.getElementById(imageTagId).style.display = 'block';
+                    document.getElementById(labelId).style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Variable Scenario Array outputs layout updates for popup window frame
+        const mockDiagnosticScenarios = [
+            { title: "Analysis Permutation System Record #71", text: "Successfully validated tissue and matrix matches for entry row database file #D11. Structural markers align clean configurations across target parameters with low latency." },
+            { title: "Crossmatching Synchronization Metric Alert", text: "Calculations across the regional medical center nodes report a clean crossmatch check. Point assignments committed across tables successfully." },
+            { title: "Central Ledger Encryption Handshake Complete", text: "Cross-center authorization verified securely. New tracking lists match without any conflict markers detected." }
+        ];
+
+        function openSimulationCasePopup() {
+            const pickedScenario = mockDiagnosticScenarios[Math.floor(Math.random() * mockDiagnosticScenarios.length)];
+            document.getElementById('popupHeaderTitle').innerText = pickedScenario.title;
+            document.getElementById('popupContentBody').innerText = pickedScenario.text;
+            document.getElementById('appDiagnosticPopup').classList.add('open');
+        }
+
+        function closeSimulationCasePopup() {
+            document.getElementById('appDiagnosticPopup').classList.remove('open');
+        }
+
+        function triggerSidebarAction(moduleName) {
+            alert(`Opening System Component Workspace: ${moduleName}. Connecting secure local database socket.`);
+        }
+
+        function switchPage(pageId, element) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(pageId).classList.add('active');
+            element.classList.add('active');
+            
+            const titleDisplayText = document.getElementById('view-title');
+            if(pageId === 'client-view') titleDisplayText.innerText = "LifeBridge Welcome Registry Hub";
+            else if(pageId === 'admin-view') titleDisplayText.innerText = "Cross-Match Console";
+            else titleDisplayText.innerText = "System Intake Records";
+        }
+
+        async function loadSystemDatabasePayloads() {
+            const res = await fetch('/api/data');
+            const data = await res.json();
+            
+            document.getElementById('donorTableBody').innerHTML = data.donors.map(d => {
+                const badgeStyle = d.history.includes("ALREADY") ? 'badge-history' : 'badge-active';
+                return `<tr>
+                    <td><div style="width:36px; height:36px; border-radius:50%; background:#e8e2d5; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:bold; color:var(--gold-dark);">👤</div></td>
+                    <td><strong>${d.name}</strong><br><small style="color:var(--slate-muted);">${d.hospital}<br>${d.phone}</small></td>
+                    <td><b style="color:var(--gold-dark);">${d.blood_type}</b></td>
+                    <td><code>${d.hla_marker}</code></td>
+                    <td><b>${d.organ_available}</b></td>
+                    <td><span class="badge ${badgeStyle}">${d.history}</span></td>
+                </tr>`;
+            }).join('');
+            
+            document.getElementById('recipientTableBody').innerHTML = data.recipients.map(r => 
+                `<tr>
+                    <td><b>#R${r.id}</b></td>
+                    <td><strong>${r.name}</strong><br><small style="color:var(--slate-muted);">${r.hospital}</small></td>
+                    <td><b style="color:var(--gold-dark);">${r.blood_type}</b></td>
+                    <td><code>${r.hla_marker}</code></td>
+                    <td><b style="color:#d32f2f;">Priority ${r.urgency_score}/10</b></td>
+                </tr>`
+            ).join('');
+        }
+
+        async function executeDatabaseWrite(poolType) {
+            const fieldPrefix = poolType === 'donor' ? 'd_' : 'r_';
+            const payload = {
+                name: document.getElementById(`${fieldPrefix}name`).value,
+                hospital: document.getElementById(`${fieldPrefix}hospital`).value,
+                blood_type: document.getElementById(`${fieldPrefix}blood`).value,
+                hla_marker: document.getElementById(`${fieldPrefix}hla`).value,
+                organ: document.getElementById(`${fieldPrefix}organ`).value
+            };
+            
+            if(poolType === 'donor') {
+                payload.phone = document.getElementById('d_phone').value;
+                payload.history = document.getElementById('d_history').value;
+            } else {
+                payload.urgency = document.getElementById('r_urgency').value;
+            }
+
+            if(!payload.name || !payload.hospital) { alert("Please compile mandatory field fields."); return; }
+
+            await fetch(`/api/${poolType}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            
+            document.getElementById(`${fieldPrefix}name`).value = '';
+            document.getElementById(`${fieldPrefix}hospital`).value = '';
+            document.getElementById(`${fieldPrefix}hla`).value = '';
+            document.getElementById(`${fieldPrefix}organ`).value = '';
+            if(poolType === 'donor') {
+                document.getElementById('d_phone').value = '';
+                document.getElementById('donor_photo_preview').style.display = 'none';
+                document.getElementById('upload_label').style.display = 'block';
+            } else {
+                document.getElementById('r_urgency').value = '';
+            }
+            
+            loadSystemDatabasePayloads();
+            alert("Entry successfully committed to data structures.");
+        }
+
+        async function runLiveAllocationMatching() {
+            const res = await fetch('/api/match');
+            const matches = await res.json();
+            if(matches.length === 0) { alert("No valid matching indices meet active tracking parameters."); return; }
+            
+            document.getElementById('matchTableBody').innerHTML = matches.map(m => 
+                `<tr><td><b style="color:var(--gold-dark);">${m.organ}</b></td><td><b>${m.donor_name}</b> <small style="color:var(--slate-muted);">[#D${m.donor_id}]</small></td><td><b>${m.recipient_name}</b> <small style="color:var(--slate-muted);">[#R${m.recipient_id}]</small></td><td>✓ ${m.blood_match}</td><td>${m.hla_matches}</td><td><b style="color:var(--gold-dark);">${m.score} Evaluation Points</b></td></tr>`
+            ).join('');
+            document.getElementById('matchCard').style.display = 'block';
+        }
+
+        window.onload = function() {
+            loadSystemDatabasePayloads();
+        };
+    </script>
+</body>
+</html> 
